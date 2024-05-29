@@ -9,11 +9,12 @@ const PlaylistsScreen = ({ navigation }) => {
     const [modalVisible2, setModalVisible2] = useState({visible: false, id: null});
     const context = useContext(AudioContext);
     const [text, onChangeText] = React.useState('');
+    const [playlistData, setPlaylistData] = useState(context.playlists)
 
     onCreate = async (data) => {
         setModalVisible(!modalVisible)
         console.log(data)
-        await context.newPlaylist(data)
+        setPlaylistData(await context.newPlaylist(data))
         Alert.alert('Playlist created!');
         onChangeText("")
     }
@@ -21,7 +22,7 @@ const PlaylistsScreen = ({ navigation }) => {
     onUpdate = async (data) => {
       setModalVisible2({visible: false, id: null})
       console.log(data)
-      await context.updatePlaylist(data)
+      setPlaylistData(await context.updatePlaylist(data))
       onChangeText("")
       Alert.alert('Playlist updated!');
     }
@@ -29,7 +30,7 @@ const PlaylistsScreen = ({ navigation }) => {
     onDelete = async (data) => {
       setModalVisible2({visible: false, id: null})
       console.log(data)
-      await context.deletePlaylist(data)
+      setPlaylistData(await context.deletePlaylist(data))
       onChangeText("")
       Alert.alert('Playlist deleted!');
     }
@@ -88,7 +89,7 @@ const PlaylistsScreen = ({ navigation }) => {
                         <Pressable
                         style={[styles.button, styles.buttonClose]}
                         onPress={async () => await onUpdate({id: modalVisible2.id, name: text})}>
-                        <Text style={styles.textStyle}>Update Playlist Name</Text>
+                        <Text style={styles.textStyle}>Update</Text>
                         </Pressable>
                         <Pressable
                         style={[styles.button, styles.buttonClose]}
@@ -103,7 +104,7 @@ const PlaylistsScreen = ({ navigation }) => {
             <View>
             <Text style={styles.createText} onPress={() => setModalVisible(true)}>CREATE NEW PLAYLIST</Text>
             </View>
-            {context.playlists.map(item => 
+            {playlistData.map(item => 
                 <Pressable style={styles.track} key={item.id} onPress={() => navigation.navigate("View Playlist", {playlist: item})}>
                     <View style={styles.containerLeft}>
                         {/* <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize} /> */}

@@ -229,6 +229,8 @@ export class AudioProvider extends Component {
                 // Handle errors
                 console.log(err)
             });
+
+        return newPlaylist;
     }
 
     updatePlaylist = async (data) => {
@@ -254,6 +256,8 @@ export class AudioProvider extends Component {
                 // Handle errors
                 console.log(err)
             });
+
+        return this.state.playlists;
     }
 
     deletePlaylist = async (data) => {
@@ -270,6 +274,8 @@ export class AudioProvider extends Component {
                 // Handle errors
                 console.log(err)
             });
+
+        return newPlaylist;
     }
 
     setStateData = async (metadata, playlists) => {
