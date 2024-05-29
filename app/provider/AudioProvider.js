@@ -20,6 +20,7 @@ export class AudioProvider extends Component {
             artists: [],
             genres: [],
             playlists: [],
+            isLoaded: false,
         }
     }
 
@@ -390,7 +391,7 @@ export class AudioProvider extends Component {
             })
         }
         
-        this.setState({...this.state, tracks: metadata, albums: albumRes, artists: artistRes, genres: genreRes, playlists: playlists})
+        this.setState({...this.state, tracks: metadata, albums: albumRes, artists: artistRes, genres: genreRes, playlists: playlists, isLoaded: true})
     }
 
     getAssetInfo = async (item) => {
@@ -458,7 +459,8 @@ export class AudioProvider extends Component {
             playlists: this.state.playlists,
             newPlaylist: this.newPlaylist,
             updatePlaylist: this.updatePlaylist,
-            deletePlaylist: this.deletePlaylist,}}>
+            deletePlaylist: this.deletePlaylist,
+            isLoaded: this.state.isLoaded,}}>
                 {this.props.children}
                 </AudioContext.Provider>
     }
