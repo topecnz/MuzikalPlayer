@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, Pressable } from 'react-native';
 import { Entypo } from "@expo/vector-icons";
 import { AudioContext } from '../provider/AudioProvider';
 
@@ -10,12 +10,12 @@ class ArtistsScreen extends Component {
         <ScrollView contentContainerStyle={{alignContent: "center", justifyContent: "center"}} style={styles.container}>
             <View style={styles.recentAddedImages}>
                 {this.context.artists.sort((a, b) => a.name.localeCompare(b.name)).map(item => 
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate("View Artist", {artist: item})}>
+                    <Pressable onPress={() => this.props.navigation.navigate("View Artist", {artist: item})}>
                         <Image source={{uri: item.albums[item.albums.length - 1].image}} style={styles.imageSize} resizeMode='scale'/>
                         <View styles={styles.artistTextCard}>
                             <Text style={styles.artistTextCard}>{item.name}</Text>
                         </View>
-                    </TouchableOpacity>
+                    </Pressable>
                 )}
             </View>
         </ScrollView>

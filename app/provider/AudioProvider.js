@@ -17,7 +17,9 @@ export class AudioProvider extends Component {
             data: [],
             tracks: [],
             albums: [],
-            artists: []
+            artists: [],
+            genres: [],
+            playlists: [],
         }
     }
 
@@ -57,17 +59,15 @@ export class AudioProvider extends Component {
                 await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/data.json", JSON.stringify({hello: "world"}), {
                 encoding: FileSystem.EncodingType.UTF8
                 })
+
+                await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify([]), {
+                encoding: FileSystem.EncodingType.UTF8
+                })
             }).catch((err) => {
                 // Handle errors
                 console.log(err)
             });
         }
-
-        //testing
-        
-        // let info = await FileSystem.getInfoAsync("file:///storage/emulated/0/Music/Riririn'_Rin'ca/Disc 1/1. Only.flac");
-        // let info = await FileSystem.getInfoAsync("file:///storage/emulated/0/Music/2045, Tsuki yori. Original Sound Track [MP3 320K]/Disc 2/17.Eterna.mp3");
-        // console.log(info)
 
         let readData = await FileSystem.readAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/original.json", {
             encoding: FileSystem.EncodingType.UTF8
@@ -77,26 +77,10 @@ export class AudioProvider extends Component {
             encoding: FileSystem.EncodingType.UTF8
         }))
 
-        // console.log(console.log(JSON.stringify(media.assets) != readData))
-
-        // album = metadata.map(item => {
-        //     return {
-        //         id: item.assets.albumId,
-        //         album: item.metadata.album,
-        //         image: item.metadata.image
-        //     }
-        // });
-        // jsonObject = album.map(JSON.stringify);
-        // uniqueSet = new Set(jsonObject);
-        // uniqueArray = Array.from(uniqueSet).map(JSON.parse);
-
-        // console.log("test" + JSON.stringify(uniqueArray))
-
-        // console.log(JSON.stringify(media.assets) != readData)
-        // console.log(JSON.stringify(media.assets))
-
-        // return;
-
+        let playlists = JSON.parse(await FileSystem.readAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", {
+            encoding: FileSystem.EncodingType.UTF8
+        }))
+   
         if (!metadata.hello) {
             await this.setStateData(metadata);
         }
@@ -220,11 +204,41 @@ export class AudioProvider extends Component {
         }
 
         // re-render the screen
-        await this.setStateData(metadata);
+        await this.setStateData(metadata, playlists);
 
     }
 
-    setStateData = async (metadata) => {
+    newPlaylist = async (data) => {
+        let newPlaylist = this.state.playlists
+        newPlaylist.push(
+            {
+                id: Date.now(),
+                name: data,
+                tracks: []
+            }
+        )
+
+        await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify(newPlaylist), {
+                encoding: FileSystem.EncodingType.UTF8
+            }).then(() => {
+                // File write is finished, do something here
+                console.log("Data is written!")
+            })
+            .catch((err) => {
+                // Handle errors
+                console.log(err)
+            });
+    }
+
+    updatePlaylist = async (data) => {
+        this.state.playlists.map(item => {
+            if (item.id == data.id) {
+
+            }
+        })
+    }
+
+    setStateData = async (metadata, playlists) => {
         // get album list
         let albumData = metadata.map(item => {
             return {
@@ -254,6 +268,17 @@ export class AudioProvider extends Component {
         let jsonObject1 = artistData.map(JSON.stringify);
         let uniqueSet1 = new Set(jsonObject1);
         let artistRes = Array.from(uniqueSet1).map(JSON.parse);
+
+        let genreData = metadata.map(item => {
+            return {
+                name: item.metadata.genre ? item.metadata.genre : "<unknown>",
+                tracks: [],
+                images: []
+            }
+        })
+        let jsonObject2 = genreData.map(JSON.stringify);
+        let uniqueSet2 = new Set(jsonObject2);
+        let genreRes = Array.from(uniqueSet2).map(JSON.parse);
 
         // get related images, artists, related albums and tracks from album
         for (album in albumRes) {
@@ -320,8 +345,19 @@ export class AudioProvider extends Component {
                 }
             })
         }
+
+        for (genre in genreRes) {
+            // tracks
+            metadata.map(item => {
+                let genreName = item.metadata.genre ? item.metadata.genre : "<unknown>"
+                if (genreName == genreRes[genre].name) {
+                    genreRes[genre].tracks.push(item.assets.id)
+                    genreRes[genre].images.push(item.metadata.image)
+                }
+            })
+        }
         
-        this.setState({...this.state, tracks: metadata, albums: albumRes, artists: artistRes})
+        this.setState({...this.state, tracks: metadata, albums: albumRes, artists: artistRes, genres: genreRes, playlists: playlists})
     }
 
     getAssetInfo = async (item) => {
@@ -375,20 +411,15 @@ export class AudioProvider extends Component {
         // this.getStoragePermission()
         this.getPermission()
     }
-    
-    // useEffect(() => {
-    //     getPermission()
-    // }, [])
 
     getMusicData = async (uri) => {
         return await MusicInfo.getMusicInfoAsync((uri, {genre: true, picture: false}))
     }
 
     render() {
-        
-        return  <AudioContext.Provider value={{tracks: this.state.tracks, albums: this.state.albums, artists: this.state.artists}}>
+        return <AudioContext.Provider value={{tracks: this.state.tracks, albums: this.state.albums, artists: this.state.artists, genres: this.state.genres, playlists: this.state.playlists, newPlaylist: this.newPlaylist, updatePlaylist: this.updatePlaylist}}>
                 {this.props.children}
-            </AudioContext.Provider>
+                </AudioContext.Provider>
     }
 }
 

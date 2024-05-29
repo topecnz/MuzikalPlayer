@@ -1,44 +1,50 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { Component, useContext, useState } from 'react';
+import { Modal, StyleSheet, View, Text, Image, ScrollView, Pressable } from 'react-native';
 import { Entypo } from "@expo/vector-icons";
 import { AudioContext } from '../provider/AudioProvider';
 
-class GenresScreen extends Component {
-    static contextType = AudioContext;
-  render() {
-    data = [];
+const GenresScreen = ({navigation}) => {
+    const context = useContext(AudioContext);
+    const [modalVisible, setModalVisible] = useState(false);
 
-    for (let i = 0; i < 20; i++) {
-        data.push(
-            <TouchableOpacity style={styles.track}>
-                <View style={styles.containerLeft}>
-                    <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize} />
-                    <Text style={styles.genreTitle}>Track Title</Text>
-                </View>
-                <View style={styles.containerRight}>
-                    <Entypo name="dots-three-vertical" size={24} color="black" />
-                </View>
-            </TouchableOpacity>
-        );
-    }
     return (
-        <ScrollView style={styles.container}>
-            {data}
-        </ScrollView>
+        <View style={styles.container}>
+            <Modal
+            animationType="slide"
+            transparent={false}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(!modalVisible)}>
+                
+            </Modal>
+            <ScrollView style={styles.containerInner}>
+                {context.genres.sort((a, b) => a.name.localeCompare(b.name)).map(item => 
+                    <Pressable style={styles.track} onPress={() => this.props.navigation.navigate("View Genre", {genre: item})}>
+                        <View style={styles.containerLeft}>
+                            <Image source={{uri: item.images[item.images.length - 1]}} style={styles.imageSize} />
+                            <Text style={styles.genreTitle}>{item.name}</Text>
+                        </View>
+                        <View style={styles.containerRight}>
+                            <Entypo name="dots-three-vertical" size={24} color="black" />
+                        </View>
+                    </Pressable>
+                )}
+            </ScrollView>
+        </View>
     );
-  }
 }
 
 const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
-      padding: 20,
     //   justifyContent: 'center',
+    },
+    containerInner: {
+        paddingHorizontal: 20,
     },
     track: {
         flexDirection: "row",
-        paddingBottom: 5
+        paddingVertical: 5,
     },
     genreTitle: {
         fontWeight: "bold",

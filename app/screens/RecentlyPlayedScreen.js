@@ -1,6 +1,6 @@
-//import liraries
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, {Component} from 'react';
+import { StyleSheet, Text, View, Image, ScrollView, Pressable } from 'react-native';
+import { Entypo } from "@expo/vector-icons";
 
 // create a component
 class RecentlyPlayedScreen extends Component {
@@ -9,7 +9,7 @@ class RecentlyPlayedScreen extends Component {
 
         for (let i = 0; i < 20; i++) {
             data.push(
-                <TouchableOpacity style={styles.track} onPress={() => navigation.navigate("View Playlist")}>
+                <Pressable style={styles.track} onPress={() => navigation.navigate("View Playlist")}>
                     <View style={styles.containerLeft}>
                         <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize} />
                         <Text style={styles.genreTitle}>Playlist Name {i+1}</Text>
@@ -17,7 +17,7 @@ class RecentlyPlayedScreen extends Component {
                     <View style={styles.containerRight}>
                         <Entypo name="dots-three-vertical" size={24} color="black" />
                     </View>
-                </TouchableOpacity>
+                </Pressable>
             );
         }
         return (
