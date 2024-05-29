@@ -12,7 +12,7 @@ class ViewAlbumScreen extends Component {
 
         return (
             <SafeAreaView style={styles.container}>
-                <ScrollView>
+                <ScrollView style={styles.containerInner}>
                     <View>
                     <Image source={{uri: route.params.album.images[0]}} style={styles.imageSize}/>
                     <Text style={styles.albumTitle}>{route.params.album.album}</Text>
@@ -49,8 +49,10 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
-      padding: 20
     //   justifyContent: 'center',
+    },
+    containerInner: {
+        paddingHorizontal: 20
     },
     imageSize: {
         width: null, height: 400
