@@ -1,48 +1,85 @@
-import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Pressable } from 'react-native';
+import React, {Component, useContext, useState} from 'react';
+import { Modal, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Pressable, Alert, Dimensions } from 'react-native';
 import { Entypo } from "@expo/vector-icons";
 import { AudioContext } from '../provider/AudioProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // create a component
-class ViewGenreScreen extends Component {
-    static contextType = AudioContext;
-    render() {
-        const { route } = this.props;
+const ViewGenreScreen = ({navigation, route}) => {
+    const context = useContext(AudioContext);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisibleSelect, setModalVisibleSelect] = useState(false);
+    const [trackData, setTrackData] = useState({metadata: {artist: null, title: null}});
 
-        return (
-            <SafeAreaView style={styles.container}>
-                <ScrollView>
-                    <View>
-                    <Image source={{uri: route.params.genre.images[route.params.genre.images.length - 1]}} style={styles.imageSize}/>
-                    <Text style={styles.albumTitle}>{route.params.genre.name}</Text>
+    addToPlaylist = async (data) => {
+        await context.addTrackPlaylist({id: data, tracks: [trackData.assets.id]});
+        setModalVisibleSelect(!modalVisibleSelect)
+        Alert.alert("Track added to playlist!");
+    }
+
+    return (
+        <SafeAreaView style={styles.container}>
+        <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(!modalVisible)}>
+                <View style={modalStyles.container}>
+                    <View style={modalStyles.containerInner}>
+                        <Text style={modalStyles.modalTitle}>{trackData.metadata.artist} - {trackData.metadata.title}</Text>
+                        <View style={modalStyles.modalBody}>
+                            <Text onPress={() => {setModalVisibleSelect(true), setModalVisible(!modalVisible)}}>Add to Playlist</Text>
+                        </View>
                     </View>
-                    <View style={styles.trackGap}>
-                        {this.context.tracks.map(item => {
-                            if(route.params.genre.tracks.includes(item.assets.id)) {
-                                return (
-                                    <Pressable style={styles.track}>
-                                        <View style={styles.containerLeft}>
-                                            <Image source={{uri: item.metadata.image}} style={styles.imageSize2} />
-                                            <View style={styles.option}>
-                                                <View style={styles.trackDetails}>
-                                                    <Text style={styles.trackTitle}>{item.metadata.title}</Text>
-                                                    <Text>{item.metadata.artist}</Text>
-                                                </View>
+                </View>
+            </Modal>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisibleSelect}
+                onRequestClose={() => setModalVisibleSelect(!modalVisibleSelect)}>
+                <View style={modalStyles.container}>
+                    <View style={modalStyles.containerInner2}>
+                        <Text style={modalStyles.modalTitle}>{trackData.metadata.artist} - {trackData.metadata.title}</Text>
+                        <ScrollView style={modalStyles.modalBody}>
+                            {context.playlists.map(item => 
+                                <Text style={modalStyles.playlistText} onPress={() => addToPlaylist(item.id)}>{item.name}</Text>
+                            )}
+                        </ScrollView>
+                    </View>
+                </View>
+            </Modal>
+            <ScrollView>
+                <View>
+                <Image source={{uri: route.params.genre.images[route.params.genre.images.length - 1]}} style={styles.imageSize}/>
+                <Text style={styles.albumTitle}>{route.params.genre.name}</Text>
+                </View>
+                <View style={styles.trackGap}>
+                    {context.tracks.map(item => {
+                        if(route.params.genre.tracks.includes(item.assets.id)) {
+                            return (
+                                <Pressable style={styles.track}>
+                                    <View style={styles.containerLeft}>
+                                        <Image source={{uri: item.metadata.image}} style={styles.imageSize2} />
+                                        <View style={styles.option}>
+                                            <View style={styles.trackDetails}>
+                                                <Text style={styles.trackTitle}>{item.metadata.title}</Text>
+                                                <Text>{item.metadata.artist}</Text>
                                             </View>
                                         </View>
-                                        <View style={styles.containerRight}>
-                                            <Entypo name="dots-three-vertical" size={24} color="black" />
-                                        </View>
-                                    </Pressable>
-                                )
-                            }
-                        })}
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
-        );
-    }
+                                    </View>
+                                    <View style={styles.containerRight}>
+                                    <Entypo name="dots-three-vertical" size={24} color="black" onPress={() => {setTrackData(item), setModalVisible(true)}}/>
+                                    </View>
+                                </Pressable>
+                            )
+                        }
+                    })}
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
+ 
 }
 
 const styles = StyleSheet.create({
@@ -93,6 +130,42 @@ const styles = StyleSheet.create({
     containerRight: {
         alignItems: "center",
         justifyContent: "center"
+    }
+});
+
+const modalStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.2)",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    containerInner: {
+        width: Dimensions.get("screen").width - 40,
+        height: "15%",
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 10,
+    },
+    containerInner2: {
+        width: Dimensions.get("screen").width - 40,
+        height: "40%",
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 10,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+    modalBody: {
+        paddingVertical: 20,
+    },
+    playlistText: {
+        fontSize: 20,
+        paddingVertical: 5,
+        paddingHorizontal: 3,
+        fontWeight: "bold"
     }
 });
 

@@ -262,7 +262,7 @@ export class AudioProvider extends Component {
 
     deletePlaylist = async (data) => {
         let newPlaylist = this.state.playlists.filter(item => item.id != data);
-        this.setState({...this.state, newPlaylist})
+        this.setState({...this.state, playlists: newPlaylist})
         // console.log(this.state.playlists)
         await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify(newPlaylist), {
                 encoding: FileSystem.EncodingType.UTF8
@@ -276,6 +276,59 @@ export class AudioProvider extends Component {
             });
 
         return newPlaylist;
+    }
+
+    addTrackPlaylist = async (data) => {
+        for (playlist in this.state.playlists) {
+            if (this.state.playlists[playlist].id == data.id) {
+                // if (!this.state.playlists[playlist].tracks.includes(data.trackId)) {
+                //     this.state.playlists[playlist].tracks.push(data.trackId)
+                // }
+                data.tracks.map(id => {
+                    if (!this.state.playlists[playlist].tracks.includes(id)) {
+                        this.state.playlists[playlist].tracks.push(id);
+                    }
+                })
+                break;
+            }
+        }
+
+        await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify(this.state.playlists), {
+                encoding: FileSystem.EncodingType.UTF8
+            }).then(() => {
+                // File write is finished, do something here
+                console.log("Data is updated!")
+            })
+            .catch((err) => {
+                // Handle errors
+                console.log(err)
+            });
+
+        this.setState({...this.state, playlists: this.state.playlists})
+
+    }
+
+    removeTrackPlaylist = async (data) => {
+        for (playlist in this.state.playlists) {
+            if (this.state.playlists[playlist].id == data.id) {
+                this.state.playlists[playlist].tracks = this.state.playlists[playlist].tracks.filter(id => id != data.tracks[0]);
+                break;
+            }
+        }
+
+        await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify(this.state.playlists), {
+                encoding: FileSystem.EncodingType.UTF8
+            }).then(() => {
+                // File write is finished, do something here
+                console.log("Data is updated!")
+            })
+            .catch((err) => {
+                // Handle errors
+                console.log(err)
+            });
+
+        this.setState({...this.state, playlists: this.state.playlists})
+
     }
 
     setStateData = async (metadata, playlists) => {
@@ -466,6 +519,8 @@ export class AudioProvider extends Component {
             newPlaylist: this.newPlaylist,
             updatePlaylist: this.updatePlaylist,
             deletePlaylist: this.deletePlaylist,
+            addTrackPlaylist: this.addTrackPlaylist,
+            removeTrackPlaylist: this.removeTrackPlaylist,
             isLoaded: this.state.isLoaded,}}>
                 {this.props.children}
                 </AudioContext.Provider>
