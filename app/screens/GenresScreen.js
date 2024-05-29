@@ -18,7 +18,7 @@ const GenresScreen = ({navigation}) => {
             </Modal>
             <ScrollView style={styles.containerInner}>
                 {context.genres.sort((a, b) => a.name.localeCompare(b.name)).map(item => 
-                    <Pressable style={styles.track} onPress={() => this.props.navigation.navigate("View Genre", {genre: item})}>
+                    <Pressable style={styles.track} onPress={() => navigation.navigate("View Genre", {genre: item})}>
                         <View style={styles.containerLeft}>
                             <Image source={{uri: item.images[item.images.length - 1]}} style={styles.imageSize} />
                             <Text style={styles.genreTitle}>{item.name}</Text>
