@@ -231,11 +231,44 @@ export class AudioProvider extends Component {
     }
 
     updatePlaylist = async (data) => {
-        this.state.playlists.map(item => {
-            if (item.id == data.id) {
-
+        // this.state.playlists.map(item => {
+        //     if (item.id == data.id) {
+                
+        //     }
+        // })
+        for (playlist in this.state.playlists) {
+            if (data.id == this.state.playlists[playlist].id) {
+                this.state.playlists[playlist].name = data.name;
+                break;
             }
-        })
+        }
+
+        await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify(this.state.playlists), {
+                encoding: FileSystem.EncodingType.UTF8
+            }).then(() => {
+                // File write is finished, do something here
+                console.log("Data is updated!")
+            })
+            .catch((err) => {
+                // Handle errors
+                console.log(err)
+            });
+    }
+
+    deletePlaylist = async (data) => {
+        let newPlaylist = this.state.playlists.filter(item => item.id != data);
+        this.setState({...this.state, newPlaylist})
+        // console.log(this.state.playlists)
+        await FileSystem.writeAsStringAsync("file:///data/user/0/host.exp.exponent/cache/MuzikalPlayer/Data/playlists.json", JSON.stringify(newPlaylist), {
+                encoding: FileSystem.EncodingType.UTF8
+            }).then(() => {
+                // File write is finished, do something here
+                console.log("Data "+ data +" is updated!")
+            })
+            .catch((err) => {
+                // Handle errors
+                console.log(err)
+            });
     }
 
     setStateData = async (metadata, playlists) => {
@@ -417,7 +450,15 @@ export class AudioProvider extends Component {
     }
 
     render() {
-        return <AudioContext.Provider value={{tracks: this.state.tracks, albums: this.state.albums, artists: this.state.artists, genres: this.state.genres, playlists: this.state.playlists, newPlaylist: this.newPlaylist, updatePlaylist: this.updatePlaylist}}>
+        return <AudioContext.Provider value={{
+            tracks: this.state.tracks,
+            albums: this.state.albums,
+            artists: this.state.artists,
+            genres: this.state.genres,
+            playlists: this.state.playlists,
+            newPlaylist: this.newPlaylist,
+            updatePlaylist: this.updatePlaylist,
+            deletePlaylist: this.deletePlaylist,}}>
                 {this.props.children}
                 </AudioContext.Provider>
     }

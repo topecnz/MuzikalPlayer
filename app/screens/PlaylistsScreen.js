@@ -6,6 +6,7 @@ import { AudioContext } from '../provider/AudioProvider';
 // create a component
 const PlaylistsScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible2, setModalVisible2] = useState({visible: false, id: null});
     const context = useContext(AudioContext);
     const [text, onChangeText] = React.useState('');
 
@@ -13,7 +14,24 @@ const PlaylistsScreen = ({ navigation }) => {
         setModalVisible(!modalVisible)
         console.log(data)
         await context.newPlaylist(data)
+        Alert.alert('Playlist created!');
         onChangeText("")
+    }
+
+    onUpdate = async (data) => {
+      setModalVisible2({visible: false, id: null})
+      console.log(data)
+      await context.updatePlaylist(data)
+      onChangeText("")
+      Alert.alert('Playlist updated!');
+    }
+
+    onDelete = async (data) => {
+      setModalVisible2({visible: false, id: null})
+      console.log(data)
+      await context.deletePlaylist(data)
+      onChangeText("")
+      Alert.alert('Playlist deleted!');
     }
 
     return (
@@ -23,7 +41,6 @@ const PlaylistsScreen = ({ navigation }) => {
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
                 }}>
                 <View style={styles.centeredView}>
@@ -50,6 +67,38 @@ const PlaylistsScreen = ({ navigation }) => {
                 </View>
                 </View>
             </Modal>
+            {/* Update modal */}
+            <Modal
+                animationType="none"
+                transparent={true}
+                visible={modalVisible2.visible}
+                onRequestClose={() => {
+                setModalVisible2({visible: false, id: null});
+                }}>
+                <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                <Text>Create New Playlist</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeText}
+                    value={text}
+                    placeholder="New Playlist"
+                />
+                    <View style={styles.buttons}>
+                        <Pressable
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={async () => await onUpdate({id: modalVisible2.id, name: text})}>
+                        <Text style={styles.textStyle}>Update Playlist Name</Text>
+                        </Pressable>
+                        <Pressable
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={async () => await onDelete(modalVisible2.id)}>
+                        <Text style={styles.textStyle}>Delete</Text>
+                        </Pressable>
+                    </View>
+                </View>
+                </View>
+            </Modal>
             <ScrollView >
             <View>
             <Text style={styles.createText} onPress={() => setModalVisible(true)}>CREATE NEW PLAYLIST</Text>
@@ -62,7 +111,7 @@ const PlaylistsScreen = ({ navigation }) => {
                         <Text>{item.tracks.length} tracks</Text>
                     </View>
                     <View style={styles.containerRight}>
-                        <Entypo name="dots-three-vertical" size={24} color="black" />
+                        <Entypo name="dots-three-vertical" size={24} color="black" onPress={() => {setModalVisible2({visible: true, id: item.id}), onChangeText(item.name)}} />
                     </View>
                 </Pressable>
             )}
