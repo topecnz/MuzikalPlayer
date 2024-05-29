@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import StackNav from './app/navigations/StackNav';
 import { registerRootComponent } from 'expo';
+import * as SplashScreen from 'expo-splash-screen';
 import AudioProvider from './app/provider/AudioProvider';
 import FooterPlayer from './app/components/FooterPlayer';
 

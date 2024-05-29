@@ -8,31 +8,32 @@ import { AudioContext } from '../provider/AudioProvider';
 const FooterPlayer = (props) => {
     const context = useContext(AudioContext);
     const [modalVisible, setModalVisible] = useState(false);
-        
-    return (
-        <View>
-            <Modal
-            animationType="slide"
-            transparent={false}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(!modalVisible)}>
-                <MusicPlayer/>
-            </Modal>
-            <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
-                <View>
-                    <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize} />
-                </View>
-                <View style={styles.containerMiddle}>
-                    <Text style={styles.trackText}>Track Name</Text>
-                    <Text style={styles.trackText2}>Artist Name</Text>
-                    <Text style={styles.trackText2}>00:00 / 00:00</Text>
-                </View>
-                <View style={styles.containerRight}>
-                    <Entypo name="controller-play" size={24} color="white" />
-                </View>
-            </Pressable>
-        </View>
-    );
+    if (context.isLoaded) {    
+        return (
+            <View>
+                <Modal
+                animationType="slide"
+                transparent={false}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(!modalVisible)}>
+                    <MusicPlayer/>
+                </Modal>
+                <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
+                    <View>
+                        <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize} />
+                    </View>
+                    <View style={styles.containerMiddle}>
+                        <Text style={styles.trackText}>Track Name</Text>
+                        <Text style={styles.trackText2}>Artist Name</Text>
+                        <Text style={styles.trackText2}>00:00 / 00:00</Text>
+                    </View>
+                    <View style={styles.containerRight}>
+                        <Entypo name="controller-play" size={24} color="white" />
+                    </View>
+                </Pressable>
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({

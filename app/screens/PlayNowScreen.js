@@ -9,19 +9,17 @@ class PlayNowScreen extends Component {
     // get first 6 latest albums
     let albums = []
     // console.log(this.context.albums)
-    if (this.context.albums) {
-        for (i = this.context.albums.length; i > this.context.albums.length - 6; i--) {
-            let item = this.context.albums[i-1];
-            // console.log(item)
-            albums.push(
-                <Pressable onPress={() => this.props.navigation.navigate("View Album", {album: item})}>
-                    <Image source={{uri: item.images[0]}} style={styles.imageSize} />
-                    <View style={styles.albumTextCard}>
-                        <Text style={styles.albumText}>{item.album}</Text>
-                    </View>
-                </Pressable>
-            )
-        }
+    for (i = this.context.albums.length; i > this.context.albums.length - 6; i--) {
+        let item = this.context.albums[i-1];
+        // console.log(item)
+        albums.push(
+            <Pressable onPress={() => this.props.navigation.navigate("View Album", {album: item})}>
+                <Image source={{uri: item.images[0]}} style={styles.imageSize} />
+                <View style={styles.albumTextCard}>
+                    <Text style={styles.albumText}>{item.album}</Text>
+                </View>
+            </Pressable>
+        )
     }
     return (
         
