@@ -4,6 +4,7 @@ import { Entypo } from "@expo/vector-icons";
 import MusicInfo from 'expo-music-info-2';
 import * as FileSystem from 'expo-file-system';
 import { StorageAccessFramework } from 'expo-file-system';
+import { Audio } from 'expo-av';
 
 import * as MediaLibrary from "expo-media-library";
 
@@ -21,7 +22,107 @@ export class AudioProvider extends Component {
             genres: [],
             playlists: [],
             isLoaded: false,
+            audioData: null,
+            audioObject: null,
+            duration: null,
+            position: null,
+            activePlayList: [],
+            currentAudio: null,
+            currentAudioIndex: null,
+            playbackPosition: null,
+            playbackDuration: null,
         }
+    }
+
+    convertTimeDuration = (data) => {
+        let minutes = Math.floor(data / 60)
+        let seconds = parseInt(data - (minutes * 60))
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        this.updateState(this, {duration: minutes + ":" + seconds})
+        // this.setState({...this.state, duration: duration, position: position})
+    }
+
+    convertTimePosition = (data) => {
+        let minutes = Math.floor(data / 60)
+        let seconds = parseInt(data - (minutes * 60))
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        this.updateState(this, {position: minutes + ":" + seconds})
+        // this.setState({...this.state, duration: duration, position: position})
+    }
+
+    setDuration = async (data) => {
+        if (data.isLoaded && data.isPlaying) {
+            this.updateState(this, { playbackPosition: data.positionMillis, playbackDuration: data.durationMillis});
+            // this.setState
+            // this.convertTimeDuration(data.durationMillis / 1000)
+            // this.convertTimePosition(data.positionMillis / 1000)
+            console.log(data)
+            // this.setState({...this.state, position: data.positionMillis, duration: data.durationMillis})
+        }
+        // console.log(data)
+    }
+
+    playAudio = async (uri, option, data) => {
+        if (this.state.currentAudio === null) {
+            const audio = new Audio.Sound();
+            const currentAudio = await audio.loadAsync(uri, option)
+
+            this.setState({...this.state, audioData: data, audioObject: audio, currentAudio: currentAudio})
+            // console.log(currentAudio.durationMillis / 1000, data.assets.duration)
+            // await this.convertTime(data.assets.duration)
+        }
+
+        if (this.state.currentAudio && JSON.stringify(data) != JSON.stringify(this.state.audioData)) {
+            await this.state.audioObject.stopAsync();
+            await this.state.audioObject.unloadAsync();
+            const currentAudio = await this.state.audioObject.loadAsync(uri, option);
+
+            this.setState({...this.state, audioData: data, currentAudio: currentAudio})
+            // console.log(currentAudio.isPlaying)
+            await this.convertTime(data.assets.duration)
+        }
+
+        this.state.audioObject.setProgressUpdateIntervalAsync(1000)
+        this.state.audioObject.setOnPlaybackStatusUpdate(this.setDuration)
+    }
+
+    pauseAudio = async () => {
+        const currentAudio = await this.state.audioObject.setStatusAsync({shouldPlay: false});
+        this.setState({...this.state, currentAudio: currentAudio})
+    }
+
+    resumeAudio = async () => {
+        const currentAudio = await this.state.audioObject.playAsync();
+        this.setState({...this.state, currentAudio: currentAudio})
+    }
+
+    stopAudio = async (uri, option, data) => {
+        const audio = Audio.Sound();
+        const currentAudio = await audio.loadAsync(uri, option)
+    }
+
+    nextAudio = async (uri, option, data) => {
+        const audio = new Audio.Sound();
+        const currentAudio = await audio.loadAsync(uri, option)
+
+        currentAudio.
+        this.setState({...this.state, audioData: data, audioObject: currentAudio})
+        console.log(data)
+    }
+
+    previousAudio = async (uri, option, data) => {
+        const audio = new Audio.Sound();
+        const currentAudio = await audio.loadAsync(uri, option)
+
+        currentAudio.
+        this.setState({...this.state, audioData: data, audioObject: currentAudio})
+        console.log(data)
     }
 
     permissionAlert = () => {
@@ -509,6 +610,10 @@ export class AudioProvider extends Component {
         return await MusicInfo.getMusicInfoAsync((uri, {genre: true, picture: false}))
     }
 
+    updateState = (prevState, newState = {}) => {
+        this.setState({ ...prevState, ...newState });
+      };
+
     render() {
         return <AudioContext.Provider value={{
             tracks: this.state.tracks,
@@ -521,9 +626,23 @@ export class AudioProvider extends Component {
             deletePlaylist: this.deletePlaylist,
             addTrackPlaylist: this.addTrackPlaylist,
             removeTrackPlaylist: this.removeTrackPlaylist,
-            isLoaded: this.state.isLoaded,}}>
+            isLoaded: this.state.isLoaded,
+            audioData: this.state.audioData,
+            audioObject: this.state.audioObject,
+            activePlayList: this.state.activePlayList,
+            currentAudio: this.state.currentAudio,
+            currentAudioIndex: this.state.currentAudioIndex,
+            playbackPosition: this.state.playbackPosition,
+            playbackDuration: this.state.playbackDuration,
+            duration: this.state.duration,
+            position: this.state.position,
+            convertTime: this.convertTime,
+            playAudio: this.playAudio,
+            pauseAudio: this.pauseAudio,
+            resumeAudio: this.resumeAudio,
+            stopAudio: this.stopAudio,}}>
                 {this.props.children}
-                </AudioContext.Provider>
+            </AudioContext.Provider>
     }
 }
 

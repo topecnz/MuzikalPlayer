@@ -49,21 +49,21 @@ const TracksScreen = ({navigation}) => {
             </Modal>
 
             <ScrollView style={styles.containerInner}>
-                    {context.tracks.sort((a, b) => a.metadata.title.localeCompare(b.metadata.title)).map(item => 
-                        <Pressable style={styles.track} key={item.assets.id}>
-                            <Image source={{uri: item.metadata.image}} style={styles.imageSize} />
-                            <View style={styles.containerLeft}>
-                                <View style={styles.trackDetails}>
-                                    <Text style={styles.trackTitle}>{ item.metadata.title }</Text>
-                                    <Text>{ item.metadata.artist }</Text>
-                                </View>
+                {context.tracks.sort((a, b) => a.metadata.title.localeCompare(b.metadata.title)).map(item => 
+                    <Pressable style={styles.track} key={item.assets.id} onPress={async () => {console.log(item.assets.uri), await context.playAudio({uri: item.assets.uri}, {shouldPlay: true}, item)}}>
+                        <Image source={{uri: item.metadata.image}} style={styles.imageSize} />
+                        <View style={styles.containerLeft}>
+                            <View style={styles.trackDetails}>
+                                <Text style={styles.trackTitle}>{ item.metadata.title }</Text>
+                                <Text>{ item.metadata.artist }</Text>
                             </View>
-                            <View style={styles.containerRight}>
-                                {/* <Entypo name="dots-three-vertical" size={24} color="black" onPress={() => showModal(item.metadata.artist, item.metadata.title)}/> */}
-                                <Entypo name="dots-three-vertical" size={24} color="black" onPress={() => {setTrackData(item), setModalVisible(true)}}/>
-                            </View>
-                        </Pressable>
-                    )}
+                        </View>
+                        <View style={styles.containerRight}>
+                            {/* <Entypo name="dots-three-vertical" size={24} color="black" onPress={() => showModal(item.metadata.artist, item.metadata.title)}/> */}
+                            <Entypo name="dots-three-vertical" size={24} color="black" onPress={() => {setTrackData(item), setModalVisible(true)}}/>
+                        </View>
+                    </Pressable>
+                )}
             </ScrollView>
         </View>
     );

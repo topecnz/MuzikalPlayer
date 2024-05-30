@@ -8,7 +8,9 @@ import { AudioContext } from '../provider/AudioProvider';
 const FooterPlayer = (props) => {
     const context = useContext(AudioContext);
     const [modalVisible, setModalVisible] = useState(false);
-    if (context.isLoaded) {    
+    const {isLoaded, audioData} = context;
+
+    if (isLoaded && audioData) {
         return (
             <View>
                 <Modal
@@ -20,15 +22,15 @@ const FooterPlayer = (props) => {
                 </Modal>
                 <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
                     <View>
-                        <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize} />
+                        <Image source={{uri: audioData.metadata.image}} style={styles.imageSize} />
                     </View>
                     <View style={styles.containerMiddle}>
-                        <Text style={styles.trackText}>Track Name</Text>
-                        <Text style={styles.trackText2}>Artist Name</Text>
-                        <Text style={styles.trackText2}>00:00 / 00:00</Text>
+                        <Text style={styles.trackText}>{audioData.metadata.title}</Text>
+                        <Text style={styles.trackText2}>{audioData.metadata.artist}</Text>
+                        <Text style={styles.trackText2}>{context.playbackPosition} / {context.playbackDuration}</Text>
                     </View>
                     <View style={styles.containerRight}>
-                        <Entypo name="controller-play" size={24} color="white" />
+                        {context.currentAudio.isPlaying ? <Entypo name="controller-paus" size={24} color="white" onPress={async () => await context.pauseAudio()}/> : <Entypo name="controller-play" size={24} color="white" onPress={async () => await context.resumeAudio()}/>}
                     </View>
                 </Pressable>
             </View>
