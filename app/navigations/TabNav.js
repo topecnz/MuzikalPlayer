@@ -12,11 +12,11 @@ const Tab = createMaterialTopTabNavigator();
 const TabNav = () => {
     return (
         <Tab.Navigator initialRouteName="Play Now">
-            <Tab.Screen name="Play Now" component={PlayNowScreen} />
-            <Tab.Screen name="Tracks" component={TracksScreen} />
-            <Tab.Screen name="Artists" component={ArtistsScreen} />
-            <Tab.Screen name="Albums" component={AlbumsScreen} />
-            <Tab.Screen name="Genres" component={GenresScreen} />
+            <Tab.Screen name="Play Now" component={PlayNowScreen} key="playNow" />
+            <Tab.Screen name="Tracks" component={TracksScreen} key="tracks" />
+            <Tab.Screen name="Artists" component={ArtistsScreen} key="artists" />
+            <Tab.Screen name="Albums" component={AlbumsScreen} key="albums" />
+            <Tab.Screen name="Genres" component={GenresScreen} key="genres" />
         </Tab.Navigator>
     );
 }

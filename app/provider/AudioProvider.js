@@ -58,48 +58,55 @@ export class AudioProvider extends Component {
 
     setDuration = async (data) => {
         if (data.isLoaded && data.isPlaying) {
-            this.updateState(this, { playbackPosition: data.positionMillis, playbackDuration: data.durationMillis});
-            // this.setState
-            // this.convertTimeDuration(data.durationMillis / 1000)
-            // this.convertTimePosition(data.positionMillis / 1000)
-            console.log(data)
-            // this.setState({...this.state, position: data.positionMillis, duration: data.durationMillis})
-        }
-        // console.log(data)
-    }
+            this.updateState(this, {
+                playbackPosition: data.positionMillis,
+                playbackDuration: data.durationMillis,
+                currentAudio: data
+            });
 
-    playAudio = async (uri, option, data) => {
+            // console.log(this.state.playbackPosition);
+            // console.log(data)
+        }
+    };
+
+    playAudio = async (uri, data) => {
         if (this.state.currentAudio === null) {
             const audio = new Audio.Sound();
-            const currentAudio = await audio.loadAsync(uri, option)
+            await audio.loadAsync(uri, {progressUpdateIntervalMillis: 1000})
+            const currentAudio = await audio.playAsync()
 
             this.setState({...this.state, audioData: data, audioObject: audio, currentAudio: currentAudio})
             // console.log(currentAudio.durationMillis / 1000, data.assets.duration)
             // await this.convertTime(data.assets.duration)
         }
 
-        if (this.state.currentAudio && JSON.stringify(data) != JSON.stringify(this.state.audioData)) {
+        // if (this.state.currentAudio && this.state.currentAudio.sound.uri === uri && JSON.stringify(data) === JSON.stringify(this.state.audioData)) {
+        //     return;
+        // }
+
+        if ((this.state.currentAudio && JSON.stringify(data) != JSON.stringify(this.state.audioData))) {
             await this.state.audioObject.stopAsync();
             await this.state.audioObject.unloadAsync();
-            const currentAudio = await this.state.audioObject.loadAsync(uri, option);
+            const currentAudio = await this.state.audioObject.loadAsync(uri, { shouldPlay: true, progressUpdateIntervalMillis: 1000});
+            // const duration = await currentAudio.getStatusAsync().then((status) => status.durationMillis);
 
             this.setState({...this.state, audioData: data, currentAudio: currentAudio})
-            // console.log(currentAudio.isPlaying)
-            await this.convertTime(data.assets.duration)
+
+            // await this.convertTime(duration);
         }
 
-        this.state.audioObject.setProgressUpdateIntervalAsync(1000)
-        this.state.audioObject.setOnPlaybackStatusUpdate(this.setDuration)
+        // this.state.audioObject.setProgressUpdateIntervalAsync(100);
+        // this.state.audioObject.setOnPlaybackStatusUpdate(this.setDuration)
     }
 
     pauseAudio = async () => {
-        const currentAudio = await this.state.audioObject.setStatusAsync({shouldPlay: false});
-        this.setState({...this.state, currentAudio: currentAudio})
+        const currentAudio = await this.state.audioObject.pauseAsync();
+        this.updateState(this, {currentAudio: currentAudio})
     }
 
     resumeAudio = async () => {
         const currentAudio = await this.state.audioObject.playAsync();
-        this.setState({...this.state, currentAudio: currentAudio})
+        this.updateState(this, {currentAudio: currentAudio})
     }
 
     stopAudio = async (uri, option, data) => {

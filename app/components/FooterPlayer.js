@@ -9,6 +9,18 @@ const FooterPlayer = (props) => {
     const context = useContext(AudioContext);
     const [modalVisible, setModalVisible] = useState(false);
     const {isLoaded, audioData} = context;
+    
+    const [isPaused, setIsPaused] = useState(false)
+
+    const convertTime = (data) => {
+        let minutes = Math.floor(data / 60)
+        let seconds = parseInt(data - (minutes * 60))
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        return minutes + ":" + seconds
+    }
 
     if (isLoaded && audioData) {
         return (
@@ -27,10 +39,10 @@ const FooterPlayer = (props) => {
                     <View style={styles.containerMiddle}>
                         <Text style={styles.trackText}>{audioData.metadata.title}</Text>
                         <Text style={styles.trackText2}>{audioData.metadata.artist}</Text>
-                        <Text style={styles.trackText2}>{context.playbackPosition} / {context.playbackDuration}</Text>
+                        <Text style={styles.trackText2}>{convertTime(context.playbackPosition/1000)} / {convertTime(context.playbackDuration/1000)}</Text>
                     </View>
                     <View style={styles.containerRight}>
-                        {context.currentAudio.isPlaying ? <Entypo name="controller-paus" size={24} color="white" onPress={async () => await context.pauseAudio()}/> : <Entypo name="controller-play" size={24} color="white" onPress={async () => await context.resumeAudio()}/>}
+                        {context.currentAudio.isPlaying && !context.currentAudio.didJustFinish ? <Entypo name="controller-paus" size={24} color="white" onPress={async () => await context.pauseAudio()}/> : <Entypo name="controller-play" size={24} color="white" onPress={async () => await context.resumeAudio()}/>}
                     </View>
                 </Pressable>
             </View>

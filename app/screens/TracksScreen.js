@@ -50,7 +50,7 @@ const TracksScreen = ({navigation}) => {
 
             <ScrollView style={styles.containerInner}>
                 {context.tracks.sort((a, b) => a.metadata.title.localeCompare(b.metadata.title)).map(item => 
-                    <Pressable style={styles.track} key={item.assets.id} onPress={async () => {console.log(item.assets.uri), await context.playAudio({uri: item.assets.uri}, {shouldPlay: true}, item)}}>
+                    <Pressable style={styles.track} key={item.assets.id} onPress={async () => {console.log(item.assets.uri), await context.playAudio({uri: item.assets.uri}, item)}}>
                         <Image source={{uri: item.metadata.image}} style={styles.imageSize} />
                         <View style={styles.containerLeft}>
                             <View style={styles.trackDetails}>

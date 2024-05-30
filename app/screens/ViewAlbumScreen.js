@@ -58,7 +58,7 @@ const ViewAlbumScreen = ({navigation, route}) => {
                     {context.tracks.map(item => {
                         if(route.params.album.tracks.includes(item.assets.id)) {
                             return (
-                                <Pressable style={styles.track}>
+                                <Pressable style={styles.track} onPress={async () => {console.log(item.assets.uri), await context.playAudio({uri: item.assets.uri}, item)}}>
                                     <View style={styles.containerLeft}>
                                         <Image source={{uri: item.metadata.image}} style={styles.imageSize2} />
                                         <View style={styles.option}>

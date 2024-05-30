@@ -17,8 +17,8 @@ const DrawerNav = () => {
             <Drawer.Screen name="Play Now" component={PlayNowScreen}/>
             <Drawer.Screen name="Playlist" component={PlaylistsScreen}/>
             <Drawer.Screen name="Library" component={TabNav}/>
-            <Drawer.Screen name="Most Played" component={MostPlayedScreen}/>
-            <Drawer.Screen name="Recently Played" component={RecentlyPlayedScreen}/>
+            {/* <Drawer.Screen name="Most Played" component={MostPlayedScreen}/> */}
+            {/* <Drawer.Screen name="Recently Played" component={RecentlyPlayedScreen}/> */}
             {/* <Drawer.Screen name="Statistics" component={StatisticsScreen}/> */}
             {/* <Drawer.Screen name="Extra" component={ViewArtistScreen}/> */}
         </Drawer.Navigator>

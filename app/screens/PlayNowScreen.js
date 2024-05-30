@@ -30,7 +30,7 @@ class PlayNowScreen extends Component {
                 {albums}
             </View>
         </View>
-        <View>
+        {/* <View>
             <Text style={styles.title}>Most Played</Text>
             <View style={styles.playedImages}>
                 <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize2} />
@@ -49,7 +49,7 @@ class PlayNowScreen extends Component {
                 <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize2} />
                 <Image source={{uri: 'https://a.ppy.sh/2103927'}} style={styles.imageSize2} />
             </View>
-        </View>
+        </View> */}
     </View>
     );
   }
